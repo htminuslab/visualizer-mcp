@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "visualizer-mcp"
+version = "0.1.0"
+description = "MCP server bridging LLMs to Siemens Visualizer via the VCC TCP socket interface"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Hans" }]
+dependencies = [
+    "mcp>=1.2.0",
+]
+
+[project.scripts]
+visualizer-mcp = "visualizer_mcp.server:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/visualizer_mcp"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
