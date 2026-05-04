@@ -68,6 +68,40 @@ Figure: Doing some checks
 
 > **Working directory.** By default the server looks for Visualizer's connection file (`.Visualizer/vccserver.cfg`) relative to its own working directory, which is the directory from which you launched `claude`. Launch both Visualizer and Claude Code from the same simulation directory and no further configuration is needed. If they differ, set `VCC_WORK_DIR` — see [Environment variables](#environment-variables).
 
+
+### LM Studio
+
+To add the Visualizer mcp server to LM Studio simply add the server to the mcp.json file which you can find on the Developers page:
+
+<p align="center">
+  <img src="lm_studio.png"/>
+</p>
+<p align="center">
+Figure: Adding the Visualizer mcp server to LM Studio for local LLM usage
+</p>
+
+Notice the "env" section where I set the **VCC_WORK_DIR** to a local directory. This is the directory where you start Visualizer from and which contains .visualizer/vccserver.cfg file. An easier way might be to force Visualizer to write the .visualizer/vccserver.cfg to a fixed location. This can be done using (see user guide for all the options including fixing the Tcp port):
+
+```
+visualizer -vccfile <directory_path> -do myscript.do
+```
+
+### VScode/VSCodium
+
+
+To add the Visualizer mcp server to VScode so that CoPilot can use it add the server to the local .vscode/mcp.json file:
+
+<p align="center">
+  <img src="vscode.png"/>
+</p>
+<p align="center">
+Figure: Adding the Visualizer mcp server to VScode for Copilot
+</p>
+
+Note that the VSCode uses **"env":{}** is empty as the project root directory is the default for the .visualizer/vccserver.cfg file so there is no need to set the **VCC_WORK_DIR** environmental variable.
+
+
+
 ---
 
 ## How it works
@@ -134,14 +168,14 @@ claude mcp add visualizer \
 # Windows
 claude mcp add visualizer `
   -e "VCC_WORK_DIR=C:\path\to\sim" `
-  -- uvx --from git+https://github.com/htminuslab/visualizer-mcp visualizer-mcp
+  -- uvx --from git+https://github.com/htminuslab/visualizer-mcp visualizer-mcp  
 ```
 
 ---
 
 ## Example: VHDL divider simulation
 
-The `vhdl_example/` directory contains a 32-bit non-restoring integer divider (`div.vhd`) and a testbench (`div_tb.vhd`). The testbench exercises both unsigned and signed division across several operand pairs. This walkthrough shows how to use Claude Code to compile, simulate, and interrogate the design.
+The `vhdl_example/` directory contains a 32-bit non-restoring integer divider (`div.vhd`) and a testbench (`div_tb.vhd`). The basic *directed test* testbench exercises both unsigned and signed division across a few operand pairs. This walk-through shows how to use Claude Code to compile, simulate, and interrogate the design.
 
 ### 1. Launch Visualizer
 
@@ -285,10 +319,12 @@ Figure: Speed up example, total run time was 89 seconds
 </p>
 
 
+*The next step is to ask Claude to create a proper testbench using either an exiting framework like UVVM/OS-VVM/CocoTB or a custom self-checking one. Ask it to add comments/documentation, to lint the code, to change the testbench to SV/SystemC, etc........*
+
 ## Some general comments
 
-- Controlling Visualizer from a Claude code prompt is slow and not very (cost) effective as simple commands will consume tokens. It is obviously easier to run a *.do* or *qrun* file. However, the reason for the demo is to show what is possible, letting the LLM control the simulation and checking the results is very interesting. 
-- Most of this code was created by Claude Code 4.6
+- Controlling Visualizer from a Claude code prompt is slow and not very (cost) effective as simple commands will consume tokens. It is obviously easier to run a *.do* or *qrun* file. However, the reason for the demo is to show what is possible, letting the LLM control the simulation and checking the results opens up some interesting capabilities. 
+- Most of this code was created by Claude Code sonnet 4.6
 - Siemens has a far more capable Questa/Visualizer mcp server called **Questa Agentic Toolkit**.
 
 ## License
