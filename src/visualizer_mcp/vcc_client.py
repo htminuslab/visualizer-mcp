@@ -101,7 +101,7 @@ class VccClient:
             raise VccConnectionClosed("VCC client not connected")
         msg_no = self._next_msg_no
         self._next_msg_no += 1
-        future: asyncio.Future = asyncio.get_event_loop().create_future()
+        future: asyncio.Future = asyncio.get_running_loop().create_future()
         self._pending[msg_no] = future
         frame = encode_tcl(msg_no, tcl)
         try:

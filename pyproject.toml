@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "visualizer-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP server bridging LLMs to Siemens Visualizer via the VCC TCP socket interface"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Hans" }]
 dependencies = [
-    "mcp>=1.2.0",
+    "mcp>=1.9.0",
 ]
 
 [project.scripts]

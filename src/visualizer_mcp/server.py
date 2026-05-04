@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
-import shlex
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -208,15 +207,15 @@ def build_server(settings: Settings | None = None) -> FastMCP:
         """Add one or more signals to the wave window. Use dot-separated paths with "sim." prefix, e.g. ["sim.top.clk", "sim.top.dut.state", "sim.div_tb.*"]"""
         if not signals:
             return {"ok": False, "error": "no signals provided"}
-        quoted = " ".join(shlex.quote(s) for s in signals)
-        return await vcc_eval(f"wave add {quoted}")  # type: ignore[misc]
+        braced = " ".join(f"{{{s}}}" for s in signals)
+        return await vcc_eval(f"wave add {braced}")  # type: ignore[misc]
 
     @mcp.tool()
     async def vcc_force(signal: str, value: str, time: str | None = None) -> dict[str, Any]:
         """Force `signal` to `value` (e.g. force sim.top.rst 1 0; force sim.top.clk 0 50ns)."""
         suffix = f" {time}" if time else ""
         return await vcc_eval(
-            f"force {shlex.quote(signal)} {shlex.quote(value)}{suffix}"
+            f"force {{{signal}}} {{{value}}}{suffix}"
         )  # type: ignore[misc]
 
     @mcp.tool()
@@ -240,7 +239,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
         if time:
             parts.append(f"-time {{{time}}}")
         parts.append(f"-radix {radix}")
-        parts.append(shlex.quote(signal))
+        parts.append(f"{{{signal}}}")
         return await vcc_eval(" ".join(parts))  # type: ignore[misc]
 
     @mcp.tool()
@@ -275,7 +274,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
         if to_time:
             parts.append(f"-to {{{to_time}}}")
         parts.append(f"-radix {radix}")
-        parts.append(shlex.quote(signal))
+        parts.append(f"{{{signal}}}")
         result = await vcc_eval(" ".join(parts))  # type: ignore[misc]
 
         if not result.get("ok") or find_value is None:
