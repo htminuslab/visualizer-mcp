@@ -1,1 +1,0 @@
-Open the wave window, add all signals from div_tb and run the simulation for 8 us. When the simulation is done check that at time 4651 ns the value of quotient_s and remainder_s are correct for the given input values on dividend_s and divider_s. Finally move the cursor in the waveform window to 4651 ns.

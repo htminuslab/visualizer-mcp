@@ -12,6 +12,8 @@ Figure: Running Visualizer_mcp
 </p>
 
 
+Controlling Visualizer from a Claude code prompt is slow and not very (cost) effective as simple commands will consume $$$ tokens. It is obviously easier to run a *.do* or *qrun* file locally. However, the reason for the demo is to show what is possible, letting the LLM control the simulation and checking the results opens up some interesting capabilities! 
+
 ---
 
 ## Prerequisites
@@ -20,10 +22,12 @@ Figure: Running Visualizer_mcp
 |---|---|---|
 | **Python 3.10+** | Runs the MCP server | [python.org](https://www.python.org/downloads/) |
 | **uv** | Installs the server via `uvx` (no manual venv) | [docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/) |
+| **git** | Used (?) by claude to install the mcp server | [git](https://git-scm.com/install/) |
 | **Siemens Visualizer** | The simulation GUI that the server controls | `visualizer` must be on `PATH` |
 | **Claude Code** | The AI assistant that issues tool calls | [claude.ai/code](https://claude.ai/code) |
 
 Note other LLM's should work as well but I am using Claude code (subscription).
+
 
 ---
 
@@ -99,6 +103,16 @@ Figure: Adding the Visualizer mcp server to VScode for Copilot
 </p>
 
 Note that the VSCode uses **"env":{}** is empty as the project root directory is the default for the .visualizer/vccserver.cfg file so there is no need to set the **VCC_WORK_DIR** environmental variable.
+
+### VScode Continue plug-in
+
+To add the Visualizer mcp server to the VSCode continue plugin (if you are running a local LLM) create a visualizer.yaml file under .continue\mcpServers as shown below:
+
+<p align="center">
+  <img src="continue.png"/>
+<p align="center">
+Figure: Adding the Visualizer mcp server to VScode Continue for local LLM use
+</p>
 
 
 
@@ -321,9 +335,41 @@ Figure: Speed up example, total run time was 89 seconds
 
 *The next step is to ask Claude to create a proper testbench using either an exiting framework like UVVM/OS-VVM/CocoTB or a custom self-checking one. Ask it to add comments/documentation, to lint the code, to change the testbench to SV/SystemC, etc........*
 
-## Some general comments
+## Some observed failures
 
-- Controlling Visualizer from a Claude code prompt is slow and not very (cost) effective as simple commands will consume tokens. It is obviously easier to run a *.do* or *qrun* file. However, the reason for the demo is to show what is possible, letting the LLM control the simulation and checking the results opens up some interesting capabilities. 
+- The LLM sometimes changes the signal name, for example, if I ask a local LLM (gemma-4-e4b) to add all testbench signals it generates a vcc_wave_add commands with the argument: 
+
+```
+Arguments: {"signals":["sim.top.div_tb.*"]}
+```
+which is incorrect as there is no **top** level. If I then ask it to not add **"top"** to the signal names it generates:
+
+```
+Arguments: {"signals":["sim.*div_tb.*"]}
+```
+
+which is also incorrect as visualizer can not process wildcard characters for the top level (***div_tb**). Unfortunately the result indicates that all is OK but no signals were added. 
+
+Note that this does not happen if you use **Claude code**, only a small LLM (e.g. 6GB Qwen) seems to have this issue. If you want to use a local LLM you have to be more specific, for example in the demo designs case you have to say *"add all sim.div_tb signals to the waveform window"* which then generate the correct argument for the mcp server:
+
+```
+Arguments: {"signals":["sim.div_tb.*"]}
+```
+
+<p align="center">
+  <img src="model_failed.png"/>
+</p>
+<p align="center">
+Figure: Reported all is OK but no signals were added to the waveform, note the vcc_wave_add arguments
+</p>
+
+
+
+
+## Some general comments
+- Make sure that Visualizer is running before you try to issue a command. 
+- If your LLM can not control Visualizer ask the LLM to issue a "connect" command followed by a "status" command. 
+- The status command will list the path to vccserver.cfg
 - Most of this code was created by Claude Code sonnet 4.6
 - Siemens has a far more capable Questa/Visualizer mcp server called **Questa Agentic Toolkit**.
 
