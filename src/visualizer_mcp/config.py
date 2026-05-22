@@ -11,7 +11,7 @@ DEFAULT_CLIENT_NAME = "Claude-MCP"
 DEFAULT_LAUNCH_TIMEOUT_S = 60.0
 DEFAULT_CMD_TIMEOUT_S = 30.0
 DEFAULT_VISUALIZER_BIN = "visualizer"
-CFG_RELATIVE_PATH = Path(".Visualizer") / "vccserver.cfg"
+CFG_RELATIVE_PATH = Path(".visualizer") / "vccserver.cfg"
 
 
 @dataclass
@@ -21,7 +21,7 @@ class Settings:
     cmd_timeout_s: float
     visualizer_bin: str
     cfg_path_override: Path | None  # explicit cfg file (mirrors -vccfile)
-    work_dir: Path  # cwd used to find ./.Visualizer/vccserver.cfg
+    work_dir: Path  # cwd used to find ./.visualizer/vccserver.cfg
 
     @classmethod
     def from_env(cls) -> "Settings":
