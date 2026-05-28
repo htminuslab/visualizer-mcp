@@ -371,7 +371,6 @@ Figure: Reported all is OK but no signals were added to the waveform, note the v
 - If your LLM can not control Visualizer ask the LLM to issue a "connect" command followed by a "status" command. 
 - The status command will list the path to vccserver.cfg
 - Most of this code was created by Claude Code sonnet 4.6
-- Siemens has a far more capable Questa/Visualizer mcp server called **Questa Agentic Toolkit**.
 
 ## License
 
